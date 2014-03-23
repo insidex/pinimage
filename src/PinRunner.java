@@ -6,14 +6,14 @@ import com.www1develop.util.pdfbox.PDFAddImage;
 import com.www1develop.util.pdfbox.PDFExtractText;
 import com.www1develop.util.pdfbox.PDFStringPosition;
 
-import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
-import java.util.Properties;
 import java.util.concurrent.TimeUnit;
 
 /**
- * PinRunner class - Runnable class that process PDF files in different threads.
+ * PinRunner class - Runnable class that process some portion of PDF files in separate thread.
+ *
+ * @author Ilya Zukhta (mail*AT*1develop.com)
+ * @since 1.0
  */
 public class PinRunner implements Runnable {
     private int startIndex;
@@ -30,6 +30,9 @@ public class PinRunner implements Runnable {
         this.endIndex = endIndex;
     }
 
+    /**
+     * Start thread with selected portion of object to process.
+     */
     @Override
     public void run() {
         Debugger.message(StatusLevel.DEBUG, String.format("start Thread (%s): tasks [%d;%d]", Thread.currentThread().getName(), startIndex, endIndex));
@@ -46,14 +49,15 @@ public class PinRunner implements Runnable {
         }
     }
 
-    // run from thread
+    /**
+     * Called from thread. Processing one pdf file with it index.
+     */
     private boolean processPDF(int pos){
         Pins pin;
         try {
             pin = pins.get(pos);
-            int word_index = -1;
             PDFExtractText pdfText = new PDFExtractText(pin.getFileIN());
-            Map<Integer, LinkedList<PDFStringPosition>> words = pdfText.readText();
+            //Map<Integer, LinkedList<PDFStringPosition>> words = pdfText.readText();
 
             Debugger.message(StatusLevel.DEBUG, "ok:read " + pin.getFileIN());
             pin.setStatus(Pins.Status.PREPARE);
@@ -66,13 +70,18 @@ public class PinRunner implements Runnable {
                 pin.setStatus(Pins.Status.IMAGE_PLACED_ERROR);
             }
         }catch(Exception e){
-            System.out.println(e);
+            System.out.println(e.getMessage());
         }
 
         return false;
     }
 
-    // add image to pdf
+    /**
+     * Place image to PDF file
+     * @param pdfText pdf page object
+     * @param pin currently pin object
+     * @return true if image was placed without errors
+     */
     private boolean placeImage(PDFExtractText pdfText, Pins pin) {
         String pdfImagePages = PinConfig.Config.pdfImagePages;
         int word_index;

@@ -1,19 +1,18 @@
 import com.www1develop.MyApp;
-import com.www1develop.io.Debugger;
-import com.www1develop.threads.ClassicRunner;
 
-import java.io.FileReader;
 import java.io.IOException;
-import java.util.List;
-import java.util.Properties;
-import java.util.logging.Logger;
 
 /**
- * Created by ilya on 20.03.14.
+ * PinImage allows you to find some pattern in PDF file and place image near with it.
+ * For example if you want to place a sign or stamp layer to a lot of PDF files,
+ * that could save your time and some nervous.
+ *
+ * Would like to say thanks to the Apache foundation for their opensource library PDFBox and other great tools.
+ *
+ * @author Ilya Zukhta (mail*AT*1develop.com)
+ * @since 1.0
  */
 public class PinImage extends MyApp{
-    public PinConfig config;
-    public Properties props;
 
     @Override
     protected void setLogger(boolean debug, String loggerName) {
@@ -22,6 +21,10 @@ public class PinImage extends MyApp{
             System.setProperty("org.apache.commons.logging.Log", "org.apache.commons.logging.impl.NoOpLog");
     }
 
+    /**
+     * It is a starting point of the program. Call with argument pointed to configuration file.
+     * @param args  First argument should be the path to the properties file
+     */
     public static void main(String[] args) {
 
         PinImage pinImage = new PinImage();
@@ -30,23 +33,19 @@ public class PinImage extends MyApp{
             pinImage.loadConfig(new PinConfig(args));
             pinImage.setLogger(PinConfig.Config.pdfDebugEnabled, "PinImage");
         }catch (IOException e){
-            System.out.println(e);
-            MyApp.exitApp("config load error " + e.getMessage());
+            MyApp.exitApp("Exit. Config loading error: " + e.getMessage());
         }
 
         try {
             PinManager pinManager = new PinManager();
-            logger.info("Try to process: " + PinManager.size() + " bills in " + pinManager.adjustThreadNumber() + " threads");
+            logger.info(String.format("Try to process %d files in %d threads...", PinManager.size(), pinManager.adjustThreadNumber()));
             pinManager.runAll();
             pinManager.killTimer();
             pinManager.waitAll();
             pinManager.close();
-            logger.info(String.format("Complete %d pdf making in: %.2fs", PinManager.size(), pinManager.getExecutionTime()/1e9));
+            logger.info(String.format("Complete all tasks, %d pdf files in: %.2f s; average: %.2f pdf/s", PinManager.size(), pinManager.getExecutionTime()/1e9, (PinManager.size() / (pinManager.getExecutionTime()/1e9))));
         } catch (Exception e) {
             e.printStackTrace();
         }
-
     }
-
-
 }

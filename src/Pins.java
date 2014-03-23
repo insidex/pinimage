@@ -1,15 +1,13 @@
-import com.www1develop.util.ZFile;
-
-import java.util.ArrayList;
-import java.util.List;
-
 /**
- * class Pins contains basic information for each pdf file
+ * Pins class is a basic holder for pdf file.
+ *
+ * @author Ilya Zukhta (mail*AT*1develop.com)
+ * @since 1.0
  */
 public class Pins {
     private String fileIN;
     private Status status;
-    public static enum Status {PREPARE, IMAGE_PLACED_OK, IMAGE_PLACED_ERROR};
+    public static enum Status {PREPARE, IMAGE_PLACED_OK, IMAGE_PLACED_ERROR}
     private static int counter_class = 0;
     private final int id = counter_class++;
 
@@ -43,5 +41,10 @@ public class Pins {
      */
     public String getFileIN() {
         return fileIN;
+    }
+
+    @Override
+    public String toString() {
+        return ("pin id: " + id + ", file: " + fileIN);
     }
 }

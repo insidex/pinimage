@@ -4,11 +4,12 @@ import com.www1develop.exceptions.IncorrectConfigurationException;
 import com.www1develop.util.ZFile;
 
 import java.io.IOException;
-import java.nio.file.Files;
-import java.util.Properties;
 
 /**
- * PinConfig loading configuration and make checking.
+ * PinConfig try to load and check user configuration.
+ *
+ * @author Ilya Zukhta (mail*AT*1develop.com)
+ * @since 1.0
  */
 public class PinConfig extends AppConfig {
 
@@ -16,46 +17,71 @@ public class PinConfig extends AppConfig {
         super(args);
     }
 
+    /**
+     * Load default value if someone miss in configuration
+     */
     static class Config{
-        static String pdfDirectory = "";
-        static String pdfDirectoryOut = "";
-        static int pdfMaxThreadNumber = 1;
-        static int pdfMaxFilesProcess = 0;
-        static int pdfMaxTimeExecute = 60;
-        static boolean pdfDebugEnabled = false;
-        static String pdfTextMarker = "";
-        static boolean pdfTextSearchExactly = true;
-        static String pdfTextSearchOrder = "";
-        static String pdfMaketStamp = "";
-        static String pdfImagePages = "";
-        static int pdfMaketTransparency = 100;
-        static float pdfTextMarkerAddX = 0.0f;
-        static float pdfTextMarkerAddY = 0.0f;
+        static String   pdfDirectory          = "";
+        static String   pdfDirectoryOut       = "";
+        static int      pdfMaxThreadNumber    = 1;
+        static int      pdfMaxFilesProcess    = 0;
+        static int      pdfMaxTimeExecute     = 60;
+        static boolean  pdfDebugEnabled       = false;
+        static String   pdfTextMarker         = "";
+        static boolean  pdfTextSearchExactly  = true;
+        static String   pdfTextSearchOrder    = "last";
+        static String   pdfMaketStamp         = "";
+        static String   pdfImagePages         = "";
+        static int      pdfMaketTransparency  = 100;
+        static float    pdfTextMarkerAddX     = 0.0f;
+        static float    pdfTextMarkerAddY     = 0.0f;
 
     }
 
+    /**
+     * Tryto load properties file or print usage information in case of failure.
+     * @throws IOException
+     */
+    @Override
+    public void load() throws IOException {
+        if(args.length > 0)
+            super.loadPropertiesFile(args[0]);
+        else
+            printUsage();
 
+        readProperties();
+        checkProperties();
+    }
+
+    /**
+     * Try to read properties from file or set to default value.
+     * @throws IncorrectConfigurationException
+     */
     private void readProperties() throws IncorrectConfigurationException{
         try {
-            Config.pdfDirectory         = properties.getProperty("pdfDirectory", "");
-            Config.pdfDirectoryOut      = properties.getProperty("pdfDirectoryOut", "");
-            Config.pdfMaxThreadNumber   = Integer.parseInt(properties.getProperty("pdfMaxThreadNumber", "1"));
-            Config.pdfMaxFilesProcess   = Integer.parseInt(properties.getProperty("pdfMaxFilesProcess", "1000"));
-            Config.pdfMaxTimeExecute    = Integer.parseInt(properties.getProperty("pdfMaxTimeExecute", "3600"));
-            Config.pdfDebugEnabled      = properties.getProperty("pdfDebugEnabled", "false").equals("true");
-            Config.pdfTextMarker        = properties.getProperty("pdfTextMarker","");
-            Config.pdfTextSearchExactly = properties.getProperty("pdfTextSearchExactly", "true").equals("true");
-            Config.pdfTextSearchOrder   = properties.getProperty("pdfTextSearchOrder", "last");
+            Config.pdfDirectory         = properties.getProperty("pdfDirectory", Config.pdfDirectory);
+            Config.pdfDirectoryOut      = properties.getProperty("pdfDirectoryOut", Config.pdfDirectoryOut);
+            Config.pdfMaxThreadNumber   = Integer.parseInt(properties.getProperty("pdfMaxThreadNumber", ""+Config.pdfMaxThreadNumber));
+            Config.pdfMaxFilesProcess   = Integer.parseInt(properties.getProperty("pdfMaxFilesProcess", ""+Config.pdfMaxFilesProcess));
+            Config.pdfMaxTimeExecute    = Integer.parseInt(properties.getProperty("pdfMaxTimeExecute", ""+Config.pdfMaxTimeExecute));
+            Config.pdfDebugEnabled      = properties.getProperty("pdfDebugEnabled", Boolean.toString(Config.pdfDebugEnabled)).equals("true");
+            Config.pdfTextMarker        = properties.getProperty("pdfTextMarker",Config.pdfTextMarker );
+            Config.pdfTextSearchExactly = properties.getProperty("pdfTextSearchExactly", Boolean.toString(Config.pdfTextSearchExactly)).equals("true");
+            Config.pdfTextSearchOrder   = properties.getProperty("pdfTextSearchOrder", Config.pdfTextSearchOrder);
             Config.pdfMaketStamp        = properties.getProperty("pdfMaketStamp", "");
             Config.pdfImagePages        = properties.getProperty("pdfImagePages", "last");
-            Config.pdfMaketTransparency = Integer.parseInt(properties.getProperty("pdfMaketTransparency", "100"));
-            Config.pdfTextMarkerAddX    = Float.parseFloat(properties.getProperty("pdfTextMarkerAddX", "0"));
-            Config.pdfTextMarkerAddY    = Float.parseFloat(properties.getProperty("pdfTextMarkerAddY", "0"));
+            Config.pdfMaketTransparency = Integer.parseInt(properties.getProperty("pdfMaketTransparency", ""+Config.pdfMaketTransparency));
+            Config.pdfTextMarkerAddX    = Float.parseFloat(properties.getProperty("pdfTextMarkerAddX", ""+Config.pdfTextMarkerAddX));
+            Config.pdfTextMarkerAddY    = Float.parseFloat(properties.getProperty("pdfTextMarkerAddY", ""+Config.pdfTextMarkerAddY));
         } catch (Exception e) {
             throw new IncorrectConfigurationException(e.getMessage());
         }
     }
 
+    /**
+     * Make a simple checking for the properties values.
+     * @throws IncorrectConfigurationException
+     */
     private void checkProperties() throws IncorrectConfigurationException{
         try{
             if(!ZFile.isDir(Config.pdfDirectory))
@@ -77,26 +103,18 @@ public class PinConfig extends AppConfig {
         }
     }
 
-
-
-    @Override
-    public void load() throws IOException {
-        if(args.length > 0)
-            super.loadPropertiesFile(args[0]);
-        else
-            printUsage();
-
-        readProperties();
-        checkProperties();
-    }
-
-
+    /**
+     * Print usage information to console.
+     */
     public void printUsage() {
         System.out.println("Usage: >java PinImage configuration");
         MyApp.exitApp("");
     }
 
-
+    /**
+     * Tests
+     * @param args no use
+     */
     public static void main(String[] args) {
         PinImage pinImage = new PinImage();
 
@@ -105,7 +123,7 @@ public class PinConfig extends AppConfig {
             pinImage.loadConfig(new PinConfig(args));
 
         }catch (Exception e){
-            System.out.println(e);
+            System.out.println(e.getMessage());
             MyApp.exitApp("config load error " + e.getMessage());
         }
         System.out.println("Config loaded!");

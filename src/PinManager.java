@@ -3,10 +3,12 @@ import com.www1develop.util.ZFile;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Properties;
 
 /**
- * PinManager class - Manipulate all threads. Using PinRunner to create thread.
+ * PinManager manipulates PinRunner's objects in different threads.
+ *
+ * @author Ilya Zukhta (mail*AT*1develop.com)
+ * @since 1.0
  */
 public class PinManager {
     public static List<Pins> pins = new ArrayList<Pins>();
@@ -24,8 +26,8 @@ public class PinManager {
      */
     public void runAll() {
         runner = new ClassicRunner();
-        int end = 0;
-        int start = 0;
+        int end;
+        int start;
         int perThread = pins.size() / adjustThreadNumber();
         for (int i = 0; i < pins.size(); i += perThread) {
             start = i;
@@ -92,6 +94,11 @@ public class PinManager {
             return pdfMaxThreadNumber;
     }
 
+    /**
+     * Create list of pins with initial information.
+     * @param directory pdf input directory
+     * @return list of pins
+     */
     private List<Pins> genPins(String directory) {
         int max = PinConfig.Config.pdfMaxFilesProcess;
         for(String file : ZFile.getFileList(directory, ".*\\.pdf$"))
