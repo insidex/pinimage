@@ -1,0 +1,7 @@
+This is a PinImage todo list.
+
+* 1. Add checking encoding of .properties file that should be UTF-8.
+* 2. Creates automatic tests for all project.
+* 3. Separate branches to GUI and Console interface.
+* 4. Move to stable/unstable/master branches.
+* 5. Add tagging to all project.
