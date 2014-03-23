@@ -1,11 +1,14 @@
+# Java output
 *.class
-
-# Package Files #
 *.jar
 *.war
 *.ear
 
-# IDEA files #
+# Intellij IDEA output
 *.iml
-.idea/
+/.idea/
 /out/
+
+# Project output
+*.log
+*.tmp
