@@ -1,6 +1,7 @@
 import com.www1develop.MyApp;
 
 import java.io.IOException;
+import java.util.Locale;
 
 /**
  * PinImage allows you to find some pattern in PDF file and place image near with it.

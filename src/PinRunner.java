@@ -39,8 +39,9 @@ public class PinRunner implements Runnable {
     public void run() {
         Debugger.message(StatusLevel.DEBUG, String.format("start Thread (%s): tasks [%d;%d]", Thread.currentThread().getName(), startIndex, endIndex));
         try {
-            TimeUnit.MILLISECONDS.sleep(500);
+            TimeUnit.MILLISECONDS.sleep(100);
             for (int i = startIndex; i <= endIndex; i++) {
+                TimeUnit.MILLISECONDS.sleep(500);
                 if(processPDF(i))
                     Debugger.message(StatusLevel.DEBUG, "pdf:processed " + pins.get(i).getStatus());
                 else
@@ -55,9 +56,8 @@ public class PinRunner implements Runnable {
      * Called from thread. Processing one pdf file with it index.
      */
     private boolean processPDF(int pos){
-        Pins pin;
+        Pins pin = pins.get(pos);
         try {
-            pin = pins.get(pos);
             PDFExtractText pdfText = new PDFExtractText(pin.getFileIN());
             Map<Integer, LinkedList<PDFStringPosition>> words = pdfText.readText();
 
@@ -73,6 +73,8 @@ public class PinRunner implements Runnable {
             }
         }catch(Exception e){
             System.out.println(e.getMessage());
+        }finally {
+            pin.setProcessed(true);
         }
 
         return false;
@@ -91,7 +93,9 @@ public class PinRunner implements Runnable {
         PDFAddImage pdfImage;
         boolean result = false;
 
+
         try {
+
             pdfImage = new PDFAddImage(pin.getFileIN(), PinConfig.Config.pdfDirectoryOut + ZFile.getFileName(pin.getFileIN()));
 
             if(pdfImagePages.equals("all")){
@@ -156,6 +160,7 @@ public class PinRunner implements Runnable {
             pdfImage.savePDF();
 
         } catch (Exception e) {
+            System.out.println("PinRunner.placeImage() exception: " + e.getMessage());
             e.printStackTrace();
         }
 

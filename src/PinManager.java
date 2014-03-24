@@ -3,6 +3,7 @@ import com.www1develop.util.ZFile;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 /**
  * PinManager manipulates PinRunner's objects in different threads.
@@ -53,7 +54,24 @@ public class PinManager {
      * @throws InterruptedException
      */
     public void waitAll() throws InterruptedException{
-        runner.waitAll();
+        int complete;
+        int percent;
+        char[] progress = {'|', '/', '-', '|', '/', '-', '\\'};
+        int n = 0;
+        while(!runner.allDone()){
+            TimeUnit.MILLISECONDS.sleep(300);
+            complete = 0;
+            for(Pins pin : pins)
+                if(pin.isProcessed)
+                    complete++;
+
+            percent = (complete * 100) / pins.size();
+            n = (n > 5 ? 0 : n+1);
+            System.out.format("[%c] Done: %4d%%\r", progress[n],percent);
+        }
+        System.out.println();
+        System.out.flush();
+        TimeUnit.MILLISECONDS.sleep(200);
     }
 
     /**

@@ -8,6 +8,7 @@ public class Pins {
     private String fileIN;
     private Status status;
     public static enum Status {PREPARE, IMAGE_PLACED_OK, IMAGE_PLACED_ERROR}
+    public boolean isProcessed = false;
     private static int counter_class = 0;
     private final int id = counter_class++;
 
@@ -41,6 +42,10 @@ public class Pins {
      */
     public String getFileIN() {
         return fileIN;
+    }
+
+    public void setProcessed(boolean isProcessed) {
+        this.isProcessed = isProcessed;
     }
 
     @Override
