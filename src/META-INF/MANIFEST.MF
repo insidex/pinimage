@@ -1,0 +1,4 @@
+Manifest-Version: 1.0
+Class-Path: pdfbox-app-1.8.4.jar
+Main-Class: PinImage
+

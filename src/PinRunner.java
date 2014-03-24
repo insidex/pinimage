@@ -6,7 +6,9 @@ import com.www1develop.util.pdfbox.PDFAddImage;
 import com.www1develop.util.pdfbox.PDFExtractText;
 import com.www1develop.util.pdfbox.PDFStringPosition;
 
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -57,7 +59,7 @@ public class PinRunner implements Runnable {
         try {
             pin = pins.get(pos);
             PDFExtractText pdfText = new PDFExtractText(pin.getFileIN());
-            //Map<Integer, LinkedList<PDFStringPosition>> words = pdfText.readText();
+            Map<Integer, LinkedList<PDFStringPosition>> words = pdfText.readText();
 
             Debugger.message(StatusLevel.DEBUG, "ok:read " + pin.getFileIN());
             pin.setStatus(Pins.Status.PREPARE);
