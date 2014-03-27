@@ -1,7 +1,7 @@
+import cmd.parser.Parser;
 import com.www1develop.MyApp;
 
 import java.io.IOException;
-import java.util.Locale;
 
 /**
  * PinImage allows you to find some pattern in PDF file and place image near with it.
@@ -38,14 +38,21 @@ public class PinImage extends MyApp{
         }
 
         try {
-            PinManager pinManager = new PinManager();
-            logger.info(String.format("Try to process %d files in %d threads...", PinManager.size(), pinManager.adjustThreadNumber()));
-            pinManager.runAll();
-            pinManager.killTimer();
-            pinManager.waitAll();
-            pinManager.close();
-            logger.info(String.format("Complete all tasks, %d pdf files in: %.2f s; average: %.2f pdf/s", PinManager.size(), pinManager.getExecutionTime()/1e9, (PinManager.size() / (pinManager.getExecutionTime()/1e9))));
-        } catch (Exception e) {
+            if(PinConfig.ConfigCMD.cmd == PinConfig.CMD.PROPERTIES){
+                PinManager pinManager = new PinManager();
+                logger.info(String.format("Try to process %d files in %d threads...", PinManager.size(), pinManager.adjustThreadNumber()));
+                pinManager.runAll();
+                pinManager.killTimer();
+                pinManager.waitAll();
+                pinManager.close();
+                logger.info(String.format("Complete all tasks, %d pdf files in: %.2f s; average: %.2f pdf/s", PinManager.size(), pinManager.getExecutionTime()/1e9, (PinManager.size() / (pinManager.getExecutionTime()/1e9))));
+            }else if (PinConfig.ConfigCMD.cmd == PinConfig.CMD.PARSE) {
+                Parser parser = new Parser(PinConfig.ConfigCMD.options);
+                parser.getMapText();
+                parser.processText();
+            }
+
+   } catch (Exception e) {
             e.printStackTrace();
         }
     }

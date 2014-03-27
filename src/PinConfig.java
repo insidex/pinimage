@@ -4,6 +4,7 @@ import com.www1develop.exceptions.IncorrectConfigurationException;
 import com.www1develop.util.ZFile;
 
 import java.io.IOException;
+import java.util.LinkedList;
 
 /**
  * PinConfig try to load and check user configuration.
@@ -13,8 +14,15 @@ import java.io.IOException;
  */
 public class PinConfig extends AppConfig {
 
+    public static enum CMD{PROPERTIES, PARSE}
+
     public PinConfig(String[] args) {
         super(args);
+    }
+
+    static class ConfigCMD{
+        static CMD cmd;
+        static LinkedList<String> options;
     }
 
     /**
@@ -44,13 +52,30 @@ public class PinConfig extends AppConfig {
      */
     @Override
     public void load() throws IOException {
-        if(args.length > 0)
-            super.loadPropertiesFile(args[0]);
-        else
+        if(args.length > 0) {
+            if(args.length == 1) {
+                ConfigCMD.cmd = CMD.PROPERTIES;
+                super.loadPropertiesFile(args[0]);
+                readProperties();
+                checkProperties();
+            }else{
+                if(args[0].equals("cmd") && args.length > 1) {
+                    if (args[1].equals("parse")) {
+                        ConfigCMD.cmd = CMD.PARSE;
+                        ConfigCMD.cmd = CMD.PARSE;
+                        ConfigCMD.options = new LinkedList<String>();
+                        for (int i = 1; i < args.length; i++) {
+                            ConfigCMD.options.add(args[i]);
+                        }
+                    }
+                }else{
+                    printUsage();
+                }
+            }
+
+        }else
             printUsage();
 
-        readProperties();
-        checkProperties();
     }
 
     /**
@@ -107,7 +132,10 @@ public class PinConfig extends AppConfig {
      * Print usage information to console.
      */
     public void printUsage() {
-        System.out.println("Usage: >java PinImage configuration");
+        System.out.println("Usage: >java PinImage [config-file] | [cmd @commands]");
+        System.out.println("@commands: ");
+        System.out.println("cmd parse - Try to find text by pattern and return the matching group. Return found content by line.");
+        System.out.println("parse \"input.pdf\" \"(regex1)~0\" [\"(re(ge)x2)~1\" \"(r(e(g)ex)3)~3\" ...]");
         MyApp.exitApp("");
     }
 
