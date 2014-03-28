@@ -4,6 +4,7 @@ import com.www1develop.util.pdfbox.PDFExtractText;
 import com.www1develop.util.pdfbox.PDFStringPosition;
 
 import java.io.IOException;
+import java.io.PrintStream;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -39,12 +40,15 @@ public class Parser {
     public void processText() throws IOException{
         if(pdfText == null)
             throw new IOException("Call getMapText() first!");
+        // UTF-8 output fix
+        PrintStream out = new PrintStream(System.out, true, "UTF-8");
 
         for (int i = 2; i < options.size(); i++) {
             String s = options.get(i);
             String regEx = s.substring(0, s.length() - 2);
             int group = Integer.parseInt(s.substring(s.length()-1, s.length()));
-            System.out.println("\"" + regEx + "\" :#: \"" + findMatch(regEx, group) + "\"");
+
+            out.println("\"" + regEx + "\" :#: \"" + findMatch(regEx, group) + "\"");
         }
     }
 

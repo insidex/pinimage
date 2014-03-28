@@ -142,7 +142,7 @@ public class PinConfig extends AppConfig {
     /**
      * Tests
      * @param args no use
-     */
+     *//*
     public static void main(String[] args) {
         PinImage pinImage = new PinImage();
 
@@ -155,6 +155,6 @@ public class PinConfig extends AppConfig {
             MyApp.exitApp("config load error " + e.getMessage());
         }
         System.out.println("Config loaded!");
-    }
+    }*/
 
 }
