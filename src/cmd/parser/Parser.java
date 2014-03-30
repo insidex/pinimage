@@ -2,7 +2,6 @@ package cmd.parser;
 
 import com.www1develop.util.pdfbox.PDFExtractText;
 import com.www1develop.util.pdfbox.PDFStringPosition;
-
 import java.io.IOException;
 import java.io.PrintStream;
 import java.util.LinkedList;
@@ -17,14 +16,13 @@ import java.util.regex.Pattern;
 public class Parser {
 
     private String fileName;
-    private String cmd;
     private List<String> options;
     private PDFExtractText pdfText;
     private Map<Integer, String> mapText;
+    private PrintStream out;
 
     public Parser(List<String> options) {
         this.fileName = options.get(1);
-        this.cmd = options.get(0);
         this.options = options;
     }
 
@@ -33,7 +31,7 @@ public class Parser {
         pdfText = new PDFExtractText(fileName);
         Map<Integer, LinkedList<PDFStringPosition>> words = pdfText.readText();
         mapText = pdfText.getRawText();
-        System.out.println(fileName);
+        out.println(fileName);
         return mapText;
     }
 
@@ -41,13 +39,10 @@ public class Parser {
         if(pdfText == null)
             throw new IOException("Call getMapText() first!");
         // UTF-8 output fix
-        PrintStream out = new PrintStream(System.out, true, "UTF-8");
-
         for (int i = 2; i < options.size(); i++) {
             String s = options.get(i);
             String regEx = s.substring(0, s.length() - 2);
             int group = Integer.parseInt(s.substring(s.length()-1, s.length()));
-
             out.println("\"" + regEx + "\" :#: \"" + findMatch(regEx, group) + "\"");
         }
     }
@@ -65,8 +60,8 @@ public class Parser {
         return result;
     }
 
-    public static void main(String[] args) {
-
-
+    public void setOut(PrintStream out) {
+        this.out = out;
     }
+
 }

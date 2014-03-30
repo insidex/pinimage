@@ -1,7 +1,10 @@
 import cmd.parser.Parser;
+import cmd.parser.Sign;
 import com.www1develop.MyApp;
 
 import java.io.IOException;
+import java.io.PrintStream;
+import java.io.UnsupportedEncodingException;
 
 /**
  * PinImage allows you to find some pattern in PDF file and place image near with it.
@@ -14,6 +17,16 @@ import java.io.IOException;
  * @since 1.0
  */
 public class PinImage extends MyApp{
+
+    public PrintStream out;
+
+    public PinImage(){
+        super();
+    }
+
+    public void setOut(PrintStream out) {
+        this.out = out;
+    }
 
     @Override
     protected void setLogger(boolean debug, String loggerName) {
@@ -31,6 +44,7 @@ public class PinImage extends MyApp{
         PinImage pinImage = new PinImage();
 
         try{
+            pinImage.setOut(new PrintStream(System.out, true, "UTF-8"));
             pinImage.loadConfig(new PinConfig(args));
             pinImage.setLogger(PinConfig.Config.pdfDebugEnabled, "PinImage");
         }catch (IOException e){
@@ -48,12 +62,18 @@ public class PinImage extends MyApp{
                 logger.info(String.format("Complete all tasks, %d pdf files in: %.2f s; average: %.2f pdf/s", PinManager.size(), pinManager.getExecutionTime()/1e9, (PinManager.size() / (pinManager.getExecutionTime()/1e9))));
             }else if (PinConfig.ConfigCMD.cmd == PinConfig.CMD.PARSE) {
                 Parser parser = new Parser(PinConfig.ConfigCMD.options);
+                parser.setOut(pinImage.out);
                 parser.getMapText();
                 parser.processText();
+            }else if (PinConfig.ConfigCMD.cmd == PinConfig.CMD.SIGN) {
+                Sign sign = new Sign(PinConfig.ConfigCMD.options);
+                sign.setOut(pinImage.out);
+                sign.obtainTextPos();
+                sign.processImage();
             }
 
-   } catch (Exception e) {
-            e.printStackTrace();
-        }
+       } catch (Exception e) {
+           e.printStackTrace();
+       }
     }
 }

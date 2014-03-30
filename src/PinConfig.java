@@ -14,7 +14,7 @@ import java.util.LinkedList;
  */
 public class PinConfig extends AppConfig {
 
-    public static enum CMD{PROPERTIES, PARSE}
+    public static enum CMD{PROPERTIES, PARSE, SIGN}
 
     public PinConfig(String[] args) {
         super(args);
@@ -62,11 +62,17 @@ public class PinConfig extends AppConfig {
                 if(args[0].equals("cmd") && args.length > 1) {
                     if (args[1].equals("parse")) {
                         ConfigCMD.cmd = CMD.PARSE;
-                        ConfigCMD.cmd = CMD.PARSE;
-                        ConfigCMD.options = new LinkedList<String>();
-                        for (int i = 1; i < args.length; i++) {
-                            ConfigCMD.options.add(args[i]);
+                    }else if (args[1].equals("sign")) {
+                        if(args.length != 7){
+                            printUsage();
+                            return;
                         }
+                        ConfigCMD.cmd = CMD.SIGN;
+                    }
+
+                    ConfigCMD.options = new LinkedList<String>();
+                    for (int i = 1; i < args.length; i++) {
+                        ConfigCMD.options.add(args[i]);
                     }
                 }else{
                     printUsage();
@@ -135,7 +141,9 @@ public class PinConfig extends AppConfig {
         System.out.println("Usage: >java PinImage [config-file] | [cmd @commands]");
         System.out.println("@commands: ");
         System.out.println("cmd parse - Try to find text by pattern and return the matching group. Return found content by line.");
-        System.out.println("parse \"input.pdf\" \"(regex1)~0\" [\"(re(ge)x2)~1\" \"(r(e(g)ex)3)~3\" ...]");
+        System.out.println("cmd parse \"input.pdf\" \"(regex1)~0\" [\"(re(ge)x2)~1\" \"(r(e(g)ex)3)~3\" ...]");
+        System.out.println("cmd sign - Try to put image to found coordinates of marker");
+        System.out.println("cmd sign \"input.pdf\" \"marker\" \"sign.jpg\" \"addX\" \"addY\"");
         MyApp.exitApp("");
     }
 
